@@ -16,6 +16,8 @@ using namespace::std;
 
 
 void print_menu( );
+void displayCopiedList(List original);
+void displayAssignment(List original);
 
 int main( )
 {
@@ -45,8 +47,10 @@ int main( )
                 cout<< "result: "<< test.getNthNode(index)->data<<endl;
                 break;
             case 'E':
-                cout<<"\nResults of empty(): ";
-                cout<<test.empty();
+                if (test.empty())
+                    cout <<"The list is empty..."<<endl;
+                else
+                    cout <<"The list is not empty..."<<endl;
                 break;
             case 'P':
                 cout<<"\nPrinting List: ";
@@ -60,11 +64,19 @@ int main( )
                 cout<< "\nInserting "<< dataPart <<" at "<< index <<endl;
                 test.insert(dataPart, index);
                 break;
+            case 'C':
+                cout << "Original list: ";test.display(cout);
+                cout << "Copied list: ";displayCopiedList(test);
+                break;
             case 'D':
                 cout<< "\nWhich position to erase?";
                 cin>>index;
-                cout<<"\nDeleting "<<test.getNthNode(index)->data<<"..."<<endl;
-                test.erase(index);
+                if (test.getNthNode(index)->data != "barf"){
+                    cout<<"Deleting "<< test.getNthNode(index)->data <<endl;
+                    test.erase(index);
+                }else{
+                    cout<<" Nothing deleted..."<<endl;
+                }
                 break;
             case 'F':
                 cout<<"\n Enter search term: ";
@@ -75,6 +87,9 @@ int main( )
                 }else{
                     cout<<"Match found at position "<<searchResult<<endl;
                 }
+                break;
+            case 'A':
+                cout<<"Newly assigned list:";displayAssignment(test);
                 break;
             case 'Q': cout << "Test program ended." << endl;
                 break;
@@ -95,9 +110,20 @@ void print_menu( )
     cout << " E   Print the result from the empty( ) function" << endl;
     cout << " P   Print a copy of the entire list" << endl;
     cout << " I   Insert a new string with the insert(...) function" << endl;
+    cout << " C   Make a copy of the list and print the copy" << endl;
     cout << " D   Delete a string at a given index" << endl;
     cout << " F   Search the list for a string" << endl;
+    cout << " A   Display the result of assigment operator"<<endl;
     cout << " Q   Quit this test program" << endl;
 }
 
+void displayCopiedList(List original){
+    List copy(original);
+    copy.display(cout);
+}
 
+void displayAssignment(List original){
+    List copy;
+    copy = original;
+    copy.display(cout);
+}

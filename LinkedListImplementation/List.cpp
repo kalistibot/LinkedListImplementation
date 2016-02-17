@@ -20,21 +20,30 @@ typedef std::string ElementType;
  Postcondition: An empty List object has been constructed.
  */
 List::List( )
-//: first(0),mySize(0)
-{
-    first = 0;
-    mySize = 0;
-    
-}
+:first(0),mySize(0)
+{}
 
 /* Construct a copy of a List object.
- 
- Precondition: None.
+  Precondition: None.
  Postcondition: A copy of source has been constructed.
  */
 List:: List( const List &source ){
+    mySize = source.mySize;
+    first = 0;
+    if (!source.empty()){
+        first = new Node(source.first->data);
+        NodePointer lastPtr = first,
+                    origPtr = source.first->next;
+        while (origPtr !=0) {
+            lastPtr->next = new Node(origPtr->data);
+            lastPtr = lastPtr->next;
+            origPtr = origPtr->next;
+        }
+    
+    }
     
 }
+
 
 /* Destroys a List object.
  
@@ -42,14 +51,16 @@ List:: List( const List &source ){
  Postcondition: All memory allocated to the List object has been freed.
  */
 List:: ~List( ){
-    NodePointer   ptr = first;
-    NodePointer  predptr = first;
-    while (ptr != 0){
-        ptr = ptr->next;
-        delete predptr;
-        predptr = ptr;
+    
+    NodePointer currPtr = first,
+                nextPtr;
+  
+    while (currPtr !=0){
+        nextPtr = currPtr->next;
+        delete currPtr;
+        currPtr = nextPtr;
     }
-    delete this;
+    first = NULL;
 }
 
 /* Assign a copy of a List object to the current object.
@@ -59,21 +70,27 @@ List:: ~List( ){
  object. A constant reference to this list is returned.
  */
 
-//const List & List::operator=( const List &rightSide ){
-//}
-/* List * newList= new List;
- 
- newList->mySize = rightSide.mySize;
- newList->first = &newList[0];
- for (int i = 0; i< newList->mySize;++i){
- NodePointer newNode = Node(rightSide[i].data, )
- 
+const List & List::operator=( const List &rightSide ){
+
+    if (this != &rightSide){
+        this->~List();
+        if (rightSide.empty())
+            first = 0;
+        else{
+            first = new Node(rightSide.first->data);
+            NodePointer lastPtr = first,
+                        rhsPtr  = rightSide.first->next;
+        
+            while (rhsPtr !=0) {
+                lastPtr->next = new Node(rhsPtr->data);
+                lastPtr = lastPtr->next;
+                rhsPtr = rhsPtr->next;
+            }
+        }
+    }
+    this->mySize = rightSide.mySize;
+    return *this;
  }
- 
- return *newList;
- 
- 
- */
 
 
 /* Returns the size of the list (number of items in the list)
@@ -111,15 +128,13 @@ void List::insert( ElementType dataVal, int index ){
         std::cerr<<"Index out of range. Nothing inserted"<<std::endl;
         return;
     }
+
     if (empty()){
-        NodePointer ptr = new Node;
+        NodePointer ptr = new Node(dataVal);
         ptr->next = first;
-        ptr->data = dataVal;
         first = ptr;
     }else{
-        //Node newNode;
-        NodePointer newptr = new Node;
-        newptr->data = dataVal;
+        NodePointer newptr = new Node(dataVal);
         NodePointer predptr = getNthNode(index - 1);
         newptr->next = predptr->next;
         //reassign the previous pointer unless the new node is going in the front
@@ -142,25 +157,27 @@ void List::insert( ElementType dataVal, int index ){
  removed (provided index is a legal position).
  */
 void List::erase( int index ){
-    if ( mySize== 0) {
-        std::cerr<<"List is Empty. Nothing to delete"<<std::endl;
-        return;
-    }
+    
     if (index < 0|| index > mySize) {
         std::cerr<<"Index out of range. Nothing deleted"<<std::endl;
         return;
     }
-    NodePointer predptr = getNthNode(index -1);
+    if ( mySize== 0) {
+        std::cerr<<"List is Empty. Nothing to delete"<<std::endl;
+        return;
+    }
+    
     NodePointer eraseptr = getNthNode(index);
     if (index ==0) {
         first = first->next;
         delete eraseptr;
-    }else{
         
+    }else{
+        NodePointer predptr = getNthNode(index -1);
         predptr->next =eraseptr->next;
         delete eraseptr;
-        --mySize;
     }
+    mySize--;
 }
 
 
@@ -173,8 +190,8 @@ void List::erase( int index ){
 void List::display( std::ostream &out ) const{
     NodePointer ptr = first;
     while (ptr !=0) {
-        out<<ptr->data<<' ';
-        ptr = ptr->next;
+        out << ptr->data<<' ';
+        ptr =  ptr->next;
         
     }
 }
@@ -186,6 +203,7 @@ void List::display( std::ostream &out ) const{
  index 1, etc. The return value is -1 if value is not found in the list.
  */
 int List::find( ElementType value) const{
+    
     int count = 0;
     NodePointer ptr = first;
     while (ptr !=NULL) {
@@ -203,6 +221,11 @@ int List::find( ElementType value) const{
  Postcondition:  The return value is a pointer to the node at a given index in the list
  */
 List::NodePointer List::getNthNode(int index){
+    if (index < 0|| index > mySize) {
+        std::cerr<<"Index out of range. Null ptr returned"<<std::endl;
+        List::NodePointer barfPtr = new Node("barf");
+        return barfPtr;
+    }
     NodePointer ptr = first;
     int count = 0;
     if (index < 0) // if the position is 0
