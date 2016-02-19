@@ -35,6 +35,7 @@ private:
     }; // end of Node class
     
     typedef Node * NodePointer;
+   
     
 public:
     List( );
@@ -116,8 +117,9 @@ public:
      that matches value. The first list item has index 0, the second has
      index 1, etc. The return value is -1 if value is not found in the list.
      */
+   
     NodePointer getNthNode(int index);
-    
+
 private:
     NodePointer first;
     int mySize;

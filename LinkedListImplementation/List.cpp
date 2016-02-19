@@ -147,7 +147,7 @@ void List::insert( ElementType dataVal, int index ){
                 predptr->next = 0;
         }
     }
-    ++mySize;
+    mySize++;
 }
 /* Remove the value from this List at a given index.
  
@@ -209,7 +209,7 @@ int List::find( ElementType value) const{
     while (ptr !=NULL) {
         if (ptr->data == value)
             return count;
-        ++count;
+        count++;
         ptr = ptr->next;
     }
     return  -1; //not found
